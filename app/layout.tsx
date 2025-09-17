@@ -53,11 +53,14 @@ export default function RootLayout({
     return (
         <html lang="fa" dir={"rtl"}>
         <body
-            className={`${IranSansFont.className} min-h-screen bg-background antialiased`}
+            className={`${IranSansFont.className} antialiased`}
         >
         <Providers>
-            <main>{children}</main>
-            <Toaster richColors/>
+            <main
+                className={"min-h-screen bg-background text-foreground flex flex-col items-center justify-center "}>{children}</main>
+            <Toaster richColors toastOptions={{
+                className: IranSansFont.className
+            }}/>
         </Providers>
         </body>
         </html>

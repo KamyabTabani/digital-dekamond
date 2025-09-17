@@ -1,4 +1,3 @@
-// src/hooks/use-auth.ts
 "use client";
 
 import {StoredUser} from "@/types";
@@ -12,10 +11,12 @@ export function useAuth() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        // This effect runs only on the client
         const userJson = localStorage.getItem("user");
         if (userJson) {
             setUser(JSON.parse(userJson));
         } else {
+            // If no user, redirect to login
             router.replace("/login");
         }
         setIsLoading(false);
@@ -25,7 +26,7 @@ export function useAuth() {
         localStorage.removeItem("user");
         setUser(null);
         router.replace("/login");
-        toast.info("You have been logged out.");
+        toast.info("شما خارج شدید");
     };
 
     return {user, logout, isLoading};
