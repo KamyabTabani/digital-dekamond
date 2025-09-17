@@ -2,6 +2,7 @@
 "use client";
 
 // React and Next.js imports
+import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 
 // Library imports
@@ -24,6 +25,18 @@ import {StoredUser} from "@/types";
 
 export default function LoginPage() {
     const router = useRouter();
+    const [isLoadingPage, setIsLoadingPage] = useState(true);
+
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if (user) {
+            toast.info("You are already logged in.");
+            router.replace("/dashboard");
+        } else {
+            setIsLoadingPage(false);
+        }
+    }, [router]);
+
     const form = useForm<TLoginSchema>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
@@ -31,7 +44,7 @@ export default function LoginPage() {
         },
     });
 
-    const {mutate, isPending} = useMutation({
+    const {mutate, isPending: isSubmitting} = useMutation({
         mutationFn: fetchRandomUser,
         onSuccess: (data) => {
             const userToStore: StoredUser = {
@@ -52,6 +65,14 @@ export default function LoginPage() {
     const onSubmit = (data: TLoginSchema) => {
         mutate();
     };
+
+    if (isLoadingPage) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Loader2 className="h-8 w-8 animate-spin text-primary"/>
+            </div>
+        );
+    }
 
     return (
         <Card className="w-full max-w-sm">
@@ -82,9 +103,11 @@ export default function LoginPage() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="w-full" disabled={isPending}>
-                            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                            {isPending ? "Logging in..." : "Login"}
+                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting && (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                            )}
+                            {isSubmitting ? "Logging in..." : "Login"}
                         </Button>
                     </form>
                 </Form>
